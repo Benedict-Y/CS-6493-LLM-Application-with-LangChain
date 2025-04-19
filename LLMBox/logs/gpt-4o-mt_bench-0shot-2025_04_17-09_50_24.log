@@ -1,0 +1,31 @@
+2025-04-17 09:50:24 INFO Saving logs to /home/dasoumao/LLMBox/logs/gpt-4o-mt_bench-0shot-2025_04_17-09_50_24.log
+2025-04-17 09:50:24 INFO LLMBox revision: Not a git repository
+2025-04-17 09:50:24 INFO Run commands (pid=18068):  /home/dasoumao/miniconda3/envs/nlp/bin/python inference.py -m gpt-4o -d mt_bench --openai_api_key 'sk-Cdaw6***************************************bOYt' --model_backend openai --hf_mirror --batch_size 1
+2025-04-17 09:50:24 INFO EvaluationArguments(seed=2023, logging_dir='logs', log_level='info', evaluation_results_dir='evaluation_results', log_results=True, dataset_threading=True, dataloader_workers=0)
+2025-04-17 09:50:26 INFO Loading OpenAI API model `gpt-4o`.
+2025-04-17 09:50:26 INFO Trying to load OpenAI model with OPENAI_BASE_URL='https://nekoapi.com/v1'
+2025-04-17 09:50:28 INFO Failed when trying to get_dataset_config_names(/home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts/mt_bench_prompts.py): Couldn't find a dataset script at /home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts/mt_bench_prompts.py
+2025-04-17 09:50:28 INFO Loading dataset `mt_bench`
+2025-04-17 09:50:28 INFO ModelArguments(model_name_or_path='gpt-4o', model_type='chat', model_backend='openai', openai_api_key='sk-Cdaw6***************************************bOYt', api_endpoint='chat/completions', tokenizer_name_or_path='o200k_base', cuda_visible_devices='', torch_dtype='auto')
+2025-04-17 09:50:28 INFO DatasetArguments(dataset_names=['mt_bench'], batch_size=1, dataset_path='/home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts', num_shots=0, max_example_tokens=1024, sample_num=1, max_evaluation_instances=0, hf_mirror=True, hfd_cache_path='~/.cache/huggingface/datasets')
+2025-04-17 09:50:28 INFO Loading raw dataset `mt_bench` from local path `/home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts` with evaluation set `train`
+2025-04-17 09:50:32 INFO Evaluation data with 80 instances:
+{'question_1': 'Compose an engaging travel blog post about a recent trip to '
+               'Hawaii, highlighting cultural experiences and must-see '
+               'attractions.',
+ 'question_2': 'Rewrite your previous response. Start every sentence with the '
+               'letter A.'}
+2025-04-17 09:50:32 INFO Formatted evaluation instance 0
+('Compose an engaging travel blog post about a recent trip to Hawaii, highlighting cultural '
+ 'experiences and must-see attractions.')
+2025-04-17 09:50:32 INFO Evaluating generation on mt_bench (model_attr={'model_type': 'chat', 'model_backend': 'openai', 'multi_turn': True}, generation_kwargs={'max_tokens': 4096, 'seed': 2023}, num_shots=0, len=80, num_instances=80, use_cache=False)
+2025-04-17 09:52:41 WARNING Receive BadRequestError: Error code: 400 - {'error': {'message': "The response was filtered due to the prompt triggering Azure OpenAI's content management policy. Please modify your prompt and retry. To learn more about our content filtering policies please read our documentation: https://go.microsoft.com/fwlink/?linkid=2198766 (request id: 20250417072235572403429Bqv2bed9) (request id: 20250417095235548957458spwZ54gp) (request id: 20250417095235540973987EZUMr2At)", 'type': '', 'param': 'prompt', 'code': 'content_filter'}},1 times, retrying...
+2025-04-17 10:05:23 INFO Finished at 80 instances after 14:50.
+2025-04-17 10:05:23 INFO Loading OpenAI API model `gpt-3.5-turbo`.
+2025-04-17 10:05:23 INFO Trying to load OpenAI model with OPENAI_BASE_URL='https://nekoapi.com/v1'
+2025-04-17 10:05:23 INFO GPTEval results will be saved to evaluation_results/gpt-3.5-turbo-gpteval-2025_04_17-09_50_32.json
+2025-04-17 10:08:50 INFO Evaluation finished successfully:
+evaluation results: evaluation_results/gpt-4o-mt_bench-0shot-2025_04_17-09_50_24.json
+##### mt_bench #####
+GPT-Eval: 8.57
+

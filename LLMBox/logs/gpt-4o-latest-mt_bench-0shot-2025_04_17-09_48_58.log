@@ -1,0 +1,80 @@
+2025-04-17 09:48:58 INFO Saving logs to /home/dasoumao/LLMBox/logs/gpt-4o-latest-mt_bench-0shot-2025_04_17-09_48_58.log
+2025-04-17 09:48:58 INFO LLMBox revision: Not a git repository
+2025-04-17 09:48:58 INFO Run commands (pid=17508):  /home/dasoumao/miniconda3/envs/nlp/bin/python inference.py -m gpt-4o-latest -d mt_bench --openai_api_key 'sk-Cdaw6***************************************bOYt' --model_backend openai --hf_mirror --batch_size 1
+2025-04-17 09:48:58 INFO EvaluationArguments(seed=2023, logging_dir='logs', log_level='info', evaluation_results_dir='evaluation_results', log_results=True, dataset_threading=True, dataloader_workers=0)
+2025-04-17 09:49:00 INFO Loading OpenAI API model `gpt-4o-latest`.
+2025-04-17 09:49:00 INFO Trying to load OpenAI model with OPENAI_BASE_URL='https://nekoapi.com/v1'
+2025-04-17 09:49:03 INFO Failed when trying to get_dataset_config_names(/home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts/mt_bench_prompts.py): Couldn't find a dataset script at /home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts/mt_bench_prompts.py
+2025-04-17 09:49:03 INFO Loading dataset `mt_bench`
+2025-04-17 09:49:03 INFO ModelArguments(model_name_or_path='gpt-4o-latest', model_type='chat', model_backend='openai', openai_api_key='sk-Cdaw6***************************************bOYt', api_endpoint='chat/completions', tokenizer_name_or_path='o200k_base', cuda_visible_devices='', torch_dtype='auto')
+2025-04-17 09:49:03 INFO DatasetArguments(dataset_names=['mt_bench'], batch_size=1, dataset_path='/home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts', num_shots=0, max_example_tokens=1024, sample_num=1, max_evaluation_instances=0, hf_mirror=True, hfd_cache_path='~/.cache/huggingface/datasets')
+2025-04-17 09:49:03 INFO Loading raw dataset `mt_bench` from local path `/home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts` with evaluation set `train`
+2025-04-17 09:49:10 INFO Evaluation data with 80 instances:
+{'question_1': 'Compose an engaging travel blog post about a recent trip to '
+               'Hawaii, highlighting cultural experiences and must-see '
+               'attractions.',
+ 'question_2': 'Rewrite your previous response. Start every sentence with the '
+               'letter A.'}
+2025-04-17 09:49:10 INFO Formatted evaluation instance 0
+('Compose an engaging travel blog post about a recent trip to Hawaii, highlighting cultural '
+ 'experiences and must-see attractions.')
+2025-04-17 09:49:10 INFO Evaluating generation on mt_bench (model_attr={'model_type': 'chat', 'model_backend': 'openai', 'multi_turn': True}, generation_kwargs={'max_tokens': 4096, 'seed': 2023}, num_shots=0, len=80, num_instances=80, use_cache=False)
+2025-04-17 09:49:10 WARNING Receive InternalServerError: Error code: 503 - {'error': {'message': '当前分组 auto 下对于模型 gpt-4o-latest 无可用渠道 (request id: 20250417094909968576913wi9zEoif)', 'type': 'new_api_error'}}, skipping...
+2025-04-17 09:49:12 WARNING Receive InternalServerError: Error code: 503 - {'error': {'message': '当前分组 auto 下对于模型 gpt-4o-latest 无可用渠道 (request id: 20250417094912300982411ltrHZC7z)', 'type': 'new_api_error'}}, skipping...
+2025-04-17 09:49:14 INFO Finished at 2 instances after 00:02.
+2025-04-17 09:49:14 WARNING Error occurred during evaluation. You can continue evaluation by loading the checkpoint: --continue_from evaluation_results/gpt-4o-latest-mt_bench-0shot-2025_04_17-09_48_58.json
+2025-04-17 09:49:14 ERROR [evaluate] KeyboardInterrupt: 
+
+Traceback (most recent call last):
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_base_client.py", line 1036, in _request
+    response.raise_for_status()
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Server error '503 Service Unavailable' for url 'https://nekoapi.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_base_client.py", line 1036, in _request
+    response.raise_for_status()
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Server error '503 Service Unavailable' for url 'https://nekoapi.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/dasoumao/LLMBox/utilization/utils/catch_error.py", line 40, in wrapper
+    return func(*args, **kwargs)
+  File "/home/dasoumao/LLMBox/utilization/evaluator.py", line 111, in evaluate
+    batch_results = call_model(batch)
+  File "/home/dasoumao/LLMBox/utilization/model/model_utils/batch_sampler.py", line 209, in call_model
+    return self._forward_call(*args, **kwargs)  # type: ignore
+  File "/home/dasoumao/LLMBox/utilization/model/model.py", line 305, in generation
+    multi_turn_results = self.request(
+  File "/home/dasoumao/LLMBox/utilization/model/model.py", line 353, in request
+    response = self._chat_completions(
+  File "/home/dasoumao/LLMBox/utilization/model/model.py", line 214, in wrapper
+    results = func(*args, **kwargs)
+  File "/home/dasoumao/LLMBox/utilization/model/openai_model.py", line 46, in _chat_completions
+    results = openai.chat.completions.create(messages=messages, model=model, **kwargs)
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_utils/_utils.py", line 279, in wrapper
+    return func(*args, **kwargs)
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/resources/chat/completions/completions.py", line 929, in create
+    return self._post(
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_base_client.py", line 1276, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_base_client.py", line 949, in request
+    return self._request(
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_base_client.py", line 1042, in _request
+    return self._retry_request(
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_base_client.py", line 1091, in _retry_request
+    return self._request(
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_base_client.py", line 1042, in _request
+    return self._retry_request(
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_base_client.py", line 1089, in _retry_request
+    time.sleep(timeout)
+KeyboardInterrupt
+

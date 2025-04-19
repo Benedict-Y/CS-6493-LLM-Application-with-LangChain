@@ -1,0 +1,257 @@
+# -*- coding: utf-8 -*-
+# ---
+# jupyter:
+#   jupytext:
+#     text_representation:
+#       extension: .py
+#       format_name: light
+#       format_version: '1.5'
+#       jupytext_version: 1.14.5
+#   kernelspec:
+#     display_name: Python 3 (ipykernel)
+#     language: python
+#     name: python3
+# ---
+
+# # LLM 作为裁判：对比金融分析报告
+#
+# **目的:** 使用大型语言模型（LLM）作为专家裁判，对比分析由不同模型生成的两份（或三份）金融报告的优劣。输入包括待比较的报告文件（Markdown 格式）和一个参考信息文件，输出 LLM 的详细对比评估。
+#
+# **用法:**
+# 1.  **设置 OpenAI API 密钥:** 确保 `OPENAI_API_KEY` 环境变量已设置，或者在下面的配置单元格中直接设置 `openai.api_key`。
+# 2.  **配置参数:** 在 "配置参数" 单元格中，设置报告文件路径 (`report_paths`)、参考文件路径 (`reference_path`)、要使用的 LLM 模型 (`model_name`) 和温度 (`temperature`)。
+# 3.  **运行单元格:** 按顺序执行所有单元格。评估结果将显示在最后一个单元格的输出中。
+
+# ## 1. 导入库与设置
+
+# +
+import os
+import openai
+from typing import List, Dict
+
+# ---
+# **重要:** 请确保你的 OpenAI API 密钥已配置。
+# 推荐方式是设置环境变量 `OPENAI_API_KEY`。
+# 如果未设置环境变量，可以在下方取消注释并直接设置：
+# openai.api_key = "sk-..."
+# ---
+
+# 检查 API Key 是否已设置
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    print("警告：未找到环境变量 OPENAI_API_KEY。请确保已设置或在代码中直接提供。")
+    # 或者在这里引发错误：
+    # raise ValueError("请设置环境变量 OPENAI_API_KEY 或在代码中直接提供。")
+else:
+    openai.api_key = api_key
+
+# 注意：如果你使用的是 OpenAI Python library v1.0.0 或更高版本，
+# API 调用方式会略有不同 (例如 `client = OpenAI()` 和 `client.chat.completions.create(...)`)。
+# 此代码基于 v0.x 版本。如果遇到问题，请根据你的库版本调整 `evaluate_reports` 函数。
+# -
+
+# ## 2. 配置参数
+# 在这里修改你要比较的文件路径和模型设置。
+
+# +
+# === 输入文件路径 ===
+# 需要比较的报告文件列表 (至少 2 个，最多 3 个)
+report_paths: List[str] = [
+    "report1.md",
+    "report2.md",
+    # "report3.md"  # 如果有第三个报告，取消注释并添加路径
+]
+
+# 参考信息文件路径
+reference_path: str = "reference.md"
+
+# === OpenAI 模型设置 ===
+# 使用的模型 (例如 "gpt-4", "gpt-4-turbo", "gpt-3.5-turbo")
+model_name: str = "gpt-4"
+
+# 温度 (0.0 表示更确定的输出, 更高值表示更多样性/创造性)
+temperature: float = 0.0
+
+# API 调用时的最大 Token 数
+max_tokens: int = 2500
+# -
+
+# ## 3. 辅助函数
+
+# +
+def load_file(path: str) -> str:
+    """读取文件内容（支持 Markdown 或纯文本）。"""
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        print(f"错误：文件未找到 '{path}'")
+        raise
+    except Exception as e:
+        print(f"读取文件 '{path}' 时出错: {e}")
+        raise
+
+def construct_messages_for_comparison(reports: List[str], reference: str) -> List[Dict[str, str]]:
+    """
+    构造 Chat Completion 的 messages 列表。
+    System prompt 引导 LLM 扮演金融专家进行 *对比* 评估。
+    User prompt 提供报告和参考信息，并要求进行详细比较。
+    """
+    num_reports = len(reports)
+    report_mentions = " 和 ".join([f"报告 {i+1}" for i in range(num_reports)]) # 例如 "报告 1 和 报告 2"
+
+    system_prompt = f"""
+You are a highly experienced and objective senior financial analyst. Your primary task is to **critically compare** {num_reports} financial analysis reports provided below, based *solely* on the accompanying reference material.
+
+**Your Goal:** Determine which report offers a more insightful, accurate, well-structured, and relevant analysis relative to the others. Focus on a **direct comparison** rather than just summarizing each report individually.
+
+**Evaluation Aspects for Comparison:**
+When comparing {report_mentions}, critically assess their relative performance on:
+1.  **Accuracy & Fidelity:** How faithfully and accurately does each report represent the facts, figures, and nuances present in the reference material? Which report demonstrates superior accuracy and avoids misinterpretations?
+2.  **Analytical Depth & Insight:** Compare the depth of analysis. Which report goes beyond surface-level summarization to offer sharper insights, identify key trends, or draw more meaningful conclusions?
+3.  **Clarity & Organization:** Evaluate the structure, readability, and conciseness of each report. Which one is better organized and easier for a financial professional to understand?
+4.  **Relevance & Focus:** How effectively does each report utilize the reference material to address the implied analytical task? Which report is more focused and avoids irrelevant information or tangents?
+
+**Output Structure:**
+Your response must follow this structure strictly:
+1.  **Overall Comparative Assessment:** Begin with a concise paragraph stating which report you judge to be superior overall and briefly outline the core reasons for your judgment based on the comparison.
+2.  **Detailed Side-by-Side Comparison:**
+    *   **Accuracy:** Compare the reports on accuracy. State which is better and provide specific examples or justifications referencing the reports and reference material.
+    *   **Depth & Insight:** Compare the reports on analytical depth. State which is better and justify with examples.
+    *   **Clarity & Organization:** Compare the reports on clarity. State which is better and justify.
+    *   **Relevance & Focus:** Compare the reports on relevance. State which is better and justify.
+3.  **Strengths & Weaknesses Summary:** Provide bullet points summarizing the key comparative strengths and weaknesses of each report.
+    *   Report 1: Strengths - [...], Weaknesses - [...]
+    *   Report 2: Strengths - [...], Weaknesses - [...]
+    *   (If applicable) Report 3: Strengths - [...], Weaknesses - [...]
+4.  **Relative Scoring (as a summary):** *After* the detailed comparison, provide relative scores (0–10) reflecting your comparative judgment. Explain briefly how the scores reflect the identified differences.
+    Example Format:
+    Report 1:
+    - Accuracy: X/10
+    - Depth: X/10
+    - Clarity: X/10
+    - Relevance: X/10
+    - Overall: X/10 (Reflects its standing relative to the other reports)
+
+    Report 2:
+    - Accuracy: Y/10
+    ...
+    - Overall: Y/10
+
+    (If applicable) Report 3:
+    ...
+
+**Important:** Your analysis must be grounded in the provided texts. Be specific and provide evidence for your claims. Avoid generic statements. Your value lies in the **comparative judgment**.
+"""
+
+    user_content = "**Reference Material:**\n```markdown\n" + reference + "\n```\n\n"
+    for i, rpt in enumerate(reports, start=1):
+        user_content += f"**Report {i}:**\n```markdown\n{rpt}\n```\n\n"
+
+    user_content += f"\nPlease perform the detailed comparative evaluation of {report_mentions} based on the reference material and the instructions above."
+
+    return [
+        {"role": "system", "content": system_prompt.strip()},
+        {"role": "user",   "content": user_content.strip()},
+    ]
+
+
+def evaluate_reports_comparison(report_paths: List[str], reference_path: str,
+                                model: str, temperature: float, max_tokens: int) -> str:
+    """
+    读取文件，构造对比 prompt，调用 OpenAI API，并返回 LLM 的评审结果文本。
+    """
+    if not (2 <= len(report_paths) <= 3):
+         raise ValueError("请提供 2 或 3 个报告文件路径进行比较。")
+
+    try:
+        # 读取内容
+        print("正在加载文件...")
+        reports_content = [load_file(p) for p in report_paths]
+        reference_content = load_file(reference_path)
+        print("文件加载完成。")
+
+        # 构造对话 messages
+        print("正在构造 Prompt...")
+        messages = construct_messages_for_comparison(reports_content, reference_content)
+        # print("\n--- DEBUG: System Prompt ---")
+        # print(messages[0]['content'])
+        # print("\n--- DEBUG: User Prompt Snippet ---")
+        # print(messages[1]['content'][:500] + "...") # 打印部分 user prompt 供检查
+        # print("-----------------------------\n")
+
+
+        # 调用 ChatCompletion
+        print(f"正在调用 OpenAI API (模型: {model}, 温度: {temperature})...")
+        response = openai.ChatCompletion.create( # 使用 v0.x SDK
+        # response = openai.chat.completions.create( # 使用 v1.x+ SDK
+            model=model,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            # top_p=1.0, # 可以考虑添加其他参数
+            # frequency_penalty=0.0,
+            # presence_penalty=0.0
+        )
+        print("API 调用完成。")
+        # return response.choices[0].message.content.strip() # v0.x SDK
+        return response.choices[0].message['content'].strip() # v0.x SDK
+        # return response.choices[0].message.content.strip() # v1.x+ SDK
+
+    except openai.error.AuthenticationError:
+        print("\n错误：OpenAI API 密钥无效或未设置。请检查您的 API Key。")
+        raise
+    except openai.error.RateLimitError:
+        print("\n错误：达到了 OpenAI API 的速率限制。请稍后重试或检查您的配额。")
+        raise
+    except openai.error.InvalidRequestError as e:
+        print(f"\n错误：无效的 API 请求。可能原因包括 Prompt 过长或模型名称错误。详细信息：{e}")
+        raise
+    except FileNotFoundError:
+        # load_file 函数内部已处理打印，这里直接重新抛出
+        raise
+    except Exception as e:
+        print(f"\n运行评估时发生意外错误：{e}")
+        raise
+# -
+
+# ## 4. 执行评估
+
+# +
+print("开始执行 LLM 评审流程...")
+
+try:
+    # 调用评估函数
+    llm_evaluation_result = evaluate_reports_comparison(
+        report_paths=report_paths,
+        reference_path=reference_path,
+        model=model_name,
+        temperature=temperature,
+        max_tokens=max_tokens
+    )
+
+    # 打印结果
+    print("\n" + "="*20 + " LLM 评审结果 " + "="*20)
+    # 使用 Markdown 格式打印，在 Jupyter 中通常会渲染得更好
+    from IPython.display import display, Markdown
+    display(Markdown(llm_evaluation_result))
+    print("="*55)
+
+except FileNotFoundError:
+    print("\n评估失败：一个或多个输入文件未找到。请检查 '配置参数' 单元格中的文件路径。")
+except ValueError as ve:
+    print(f"\n评估失败：{ve}")
+except Exception as e:
+    # 其他错误已在 evaluate_reports_comparison 中打印部分信息
+    print(f"\n评估因意外错误而终止。")
+
+print("\nLLM 评审流程结束。")
+# -
+
+# ## 5. （可选）进一步分析
+#
+# 你可以在这里添加更多单元格来：
+# *   解析 LLM 输出的评分。
+# *   对结果进行可视化。
+# *   与之前的运行结果进行比较。
+# *   等等。

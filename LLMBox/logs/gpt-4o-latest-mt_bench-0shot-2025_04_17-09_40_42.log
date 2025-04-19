@@ -1,0 +1,4 @@
+2025-04-17 09:40:42 INFO Saving logs to /home/dasoumao/LLMBox/logs/gpt-4o-latest-mt_bench-0shot-2025_04_17-09_40_42.log
+2025-04-17 09:40:42 INFO LLMBox revision: Not a git repository
+2025-04-17 09:40:42 INFO Run commands (pid=14651):  /home/dasoumao/miniconda3/envs/nlp/bin/python inference.py -m gpt-4o-latest -d mt_bench --openai_api_key 'sk-Cdaw6***************************************bOYt' --model_backend openai --hf_mirror --batch_size 1
+2025-04-17 09:40:42 INFO EvaluationArguments(seed=2023, logging_dir='logs', log_level='info', evaluation_results_dir='evaluation_results', log_results=True, dataset_threading=True, dataloader_workers=0)

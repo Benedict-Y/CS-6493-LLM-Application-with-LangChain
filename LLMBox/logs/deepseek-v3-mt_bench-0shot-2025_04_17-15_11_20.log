@@ -1,0 +1,64 @@
+2025-04-17 15:11:20 INFO Saving logs to /home/dasoumao/LLMBox/logs/deepseek-v3-mt_bench-0shot-2025_04_17-15_11_20.log
+2025-04-17 15:11:20 INFO LLMBox revision: Not a git repository
+2025-04-17 15:11:20 INFO Run commands (pid=94467):  /home/dasoumao/miniconda3/envs/nlp/bin/python inference.py -m deepseek-v3 -d mt_bench --openai_api_key 'sk-Cdaw6***************************************bOYt' --model_backend openai --hf_mirror --batch_size 1 --continue_from evaluation_results/deepseek-v3-mt_bench-0shot-2025_04_17-14_17_35.json
+2025-04-17 15:11:20 INFO EvaluationArguments(seed=2023, logging_dir='logs', log_level='info', evaluation_results_dir='evaluation_results', log_results=True, dataset_threading=True, dataloader_workers=0, continue_from='evaluation_results/deepseek-v3-mt_bench-0shot-2025_04_17-14_17_35.json')
+2025-04-17 15:11:23 INFO Loading OpenAI API model `deepseek-v3`.
+2025-04-17 15:11:24 INFO Trying to load OpenAI model with OPENAI_BASE_URL='https://nekoapi.com/v1'
+2025-04-17 15:11:25 INFO Failed when trying to get_dataset_config_names(/home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts/mt_bench_prompts.py): Couldn't find a dataset script at /home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts/mt_bench_prompts.py
+2025-04-17 15:11:25 INFO Loading dataset `mt_bench`
+2025-04-17 15:11:25 INFO ModelArguments(model_name_or_path='deepseek-v3', model_type='chat', model_backend='openai', openai_api_key='sk-Cdaw6***************************************bOYt', api_endpoint='chat/completions', tokenizer_name_or_path='cl100k_base', cuda_visible_devices='', torch_dtype='auto')
+2025-04-17 15:11:25 INFO DatasetArguments(dataset_names=['mt_bench'], batch_size=1, dataset_path='/home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts', num_shots=0, max_example_tokens=1024, sample_num=1, max_evaluation_instances=0, hf_mirror=True, hfd_cache_path='~/.cache/huggingface/datasets')
+2025-04-17 15:11:25 INFO Loading raw dataset `mt_bench` from local path `/home/dasoumao/.cache/huggingface/datasets/datasets--HuggingFaceH4--mt_bench_prompts` with evaluation set `train`
+2025-04-17 15:11:30 INFO Evaluation data with 80 instances:
+{'question_1': 'Compose an engaging travel blog post about a recent trip to '
+               'Hawaii, highlighting cultural experiences and must-see '
+               'attractions.',
+ 'question_2': 'Rewrite your previous response. Start every sentence with the '
+               'letter A.'}
+2025-04-17 15:11:30 INFO Formatted evaluation instance 0
+('Compose an engaging travel blog post about a recent trip to Hawaii, highlighting cultural '
+ 'experiences and must-see attractions.')
+2025-04-17 15:11:30 INFO Continue from evaluation_results/deepseek-v3-mt_bench-0shot-2025_04_17-14_17_35.json (65 lines)
+2025-04-17 15:11:30 INFO Evaluating generation on mt_bench (model_attr={'model_type': 'chat', 'model_backend': 'openai', 'multi_turn': True}, generation_kwargs={'max_tokens': 4096, 'seed': 2023}, num_shots=0, len=15, num_instances=80, use_cache=False)
+2025-04-17 15:11:31 WARNING Receive BadRequestError: Error code: 400 - {'error': {'message': 'The parameter `max_tokens` specified in the request are not valid: integer above maximum value, expected a value <= 16384, but got 128000 instead. Request id: 0217448738902426b3bec3035c23c28a9ed78d0631efe6e33a5b0 (request id: 20250417151130219349076Fjas5B9p) (request id: 20250417151130135872631KT2ekbIC) (request id: 20250417151130109645675IP9zJvIq)', 'type': 'BadRequest', 'param': 'max_tokens', 'code': 'InvalidParameter'}},1 times, retrying...
+2025-04-17 15:11:33 WARNING Receive BadRequestError: Error code: 400 - {'error': {'message': 'The parameter `max_tokens` specified in the request are not valid: integer above maximum value, expected a value <= 16384, but got 128000 instead. Request id: 021744873891835b75c5c5b563aa8f7025cd41f9d5b54df7da147 (request id: 2025041715113181196238571L1FOqL) (request id: 20250417151131728126681eMmIeP2N) (request id: 20250417151131702284765ax2YT4ox)', 'type': 'BadRequest', 'param': 'max_tokens', 'code': 'InvalidParameter'}},2 times, retrying...
+2025-04-17 15:11:34 WARNING Receive BadRequestError: Error code: 400 - {'error': {'message': 'The parameter `max_tokens` specified in the request are not valid: integer above maximum value, expected a value <= 16384, but got 128000 instead. Request id: 02174487389339085767e7c1b7fac0507a87e172abc1cbe8577d6 (request id: 20250417151133366967915WdHi1zSC) (request id: 20250417151133283077435IfoDOaVv) (request id: 202504171511332553696731fpoAhiJ)', 'type': 'BadRequest', 'param': 'max_tokens', 'code': 'InvalidParameter'}},3 times, retrying...
+2025-04-17 15:11:36 WARNING Receive BadRequestError: Error code: 400 - {'error': {'message': 'The parameter `max_tokens` specified in the request are not valid: integer above maximum value, expected a value <= 16384, but got 128000 instead. Request id: 021744873894948b75c5c5b563aa8f7025cd41f9d5b54dfd12003 (request id: 20250417151134924084603d18CQcBY) (request id: 20250417151134840211028Iii1EMMW) (request id: 202504171511348132773412WqLY3Yu)', 'type': 'BadRequest', 'param': 'max_tokens', 'code': 'InvalidParameter'}},4 times, retrying...
+2025-04-17 15:11:36 INFO Finished at 65 instances after 00:00.
+2025-04-17 15:11:36 WARNING Error occurred during evaluation. You can continue evaluation by loading the checkpoint: --continue_from evaluation_results/deepseek-v3-mt_bench-0shot-2025_04_17-15_11_20.json
+2025-04-17 15:11:36 ERROR [evaluate] KeyboardInterrupt: 
+
+Traceback (most recent call last):
+  File "/home/dasoumao/LLMBox/utilization/model/model.py", line 353, in request
+    response = self._chat_completions(
+  File "/home/dasoumao/LLMBox/utilization/model/model.py", line 214, in wrapper
+    results = func(*args, **kwargs)
+  File "/home/dasoumao/LLMBox/utilization/model/openai_model.py", line 50, in _chat_completions
+    results = openai.chat.completions.create(messages=messages, model=model, **kwargs)
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_utils/_utils.py", line 279, in wrapper
+    return func(*args, **kwargs)
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/resources/chat/completions/completions.py", line 929, in create
+    return self._post(
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_base_client.py", line 1276, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_base_client.py", line 949, in request
+    return self._request(
+  File "/home/dasoumao/miniconda3/envs/nlp/lib/python3.10/site-packages/openai/_base_client.py", line 1057, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': 'The parameter `max_tokens` specified in the request are not valid: integer above maximum value, expected a value <= 16384, but got 128000 instead. Request id: 021744873894948b75c5c5b563aa8f7025cd41f9d5b54dfd12003 (request id: 20250417151134924084603d18CQcBY) (request id: 20250417151134840211028Iii1EMMW) (request id: 202504171511348132773412WqLY3Yu)', 'type': 'BadRequest', 'param': 'max_tokens', 'code': 'InvalidParameter'}}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/dasoumao/LLMBox/utilization/utils/catch_error.py", line 40, in wrapper
+    return func(*args, **kwargs)
+  File "/home/dasoumao/LLMBox/utilization/evaluator.py", line 111, in evaluate
+    batch_results = call_model(batch)
+  File "/home/dasoumao/LLMBox/utilization/model/model_utils/batch_sampler.py", line 209, in call_model
+    return self._forward_call(*args, **kwargs)  # type: ignore
+  File "/home/dasoumao/LLMBox/utilization/model/model.py", line 305, in generation
+    multi_turn_results = self.request(
+  File "/home/dasoumao/LLMBox/utilization/model/model.py", line 395, in request
+    time.sleep(1)
+KeyboardInterrupt
+
