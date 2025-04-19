@@ -1,4 +1,3 @@
-# finreport_simple_improved.py - 简化报告生成流程的版本  
 import os  
 import yfinance as yf  
 from datetime import datetime  
@@ -178,10 +177,19 @@ def generate_finreport(ticker):
 
 def save_report(ticker, report_content):  
     """将报告保存到文件"""  
-    filename = f"{ticker}_FinReport.md"  
-    with open(filename, "w", encoding="utf-8") as f:  
+    # 创建保存路径 - 修复路径问题
+    save_dir = os.path.join("Fin_Agent", "USStock_Finreport")
+    
+    # 确保文件夹存在
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    
+    # 构建完整文件路径
+    filepath = os.path.join(save_dir, f"{ticker}_FinReport.md")
+    
+    with open(filepath, "w", encoding="utf-8") as f:  
         f.write(report_content)  
-    return filename  
+    return filepath
 
 # ===== 单独测试工具函数 =====  
 def test_financial_tools():  

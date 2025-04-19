@@ -13,7 +13,7 @@ from transformers import pipeline
 import torch
 
 # 步骤1: 加载PDF文件  
-pdf_path = "Lecture\L1_Introduction.pdf"  # 确保此文件在当前目录下  
+pdf_path = "Q&A System\Lecture\L1_Introduction.pdf"  # 确保此文件在当前目录下  
 loader = PyPDFLoader(pdf_path)  
 documents = loader.load()  
 print(f"加载了 {len(documents)} 页PDF。")  
