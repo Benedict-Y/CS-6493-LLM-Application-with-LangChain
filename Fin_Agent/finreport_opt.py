@@ -25,7 +25,7 @@ def setup_llm():
     return ChatOpenAI(  
         model_name="gpt-4o", 
         openai_api_base="https://api.chatanywhere.tech/v1",  
-        openai_api_key="sk-bVWnGBsURxbZSojM6pU3Xmogfbiq6q835INsr1OLrHtBWmgy"  
+        openai_api_key="YOUR API KEY"  
     )  
 
 def get_user_input():  
