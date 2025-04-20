@@ -8,71 +8,62 @@ from langchain.tools import Tool
 from langchain.prompts import PromptTemplate  
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler  
 
-# ===== 配置 =====  
+# ===== CONFIG =====  
 OPENAI_API_BASE = "https://api.chatanywhere.tech/v1"  
-OPENAI_API_KEY = "sk-bVWnGBsURxbZSojM6pU3Xmogfbiq6q835INsr1OLrHtBWmgy"  
-LLM_MODEL = "gpt-3.5-turbo"  # 免费API限制使用特定模型  
+OPENAI_API_KEY = "YOUR API KEY"  
+LLM_MODEL = "deepseek-v3"  # Free API limits to certain models  
 DEFAULT_TEMPERATURE = 0.2  
-AGENT_MAX_ITERATIONS = 5  # 增加迭代次数，防止过早终止  
+AGENT_MAX_ITERATIONS = 5  # Increase iterations to prevent early termination  
 
-# ===== 金融数据工具 =====  
+# ===== Finance Data Tool =====  
 def get_stock_price(ticker: str) -> str:  
-    """获取指定股票的当前价格和基本信息"""  
+    """Get the current price and basic info of the specified stock"""  
     try:  
         stock = yf.Ticker(ticker)  
         info = stock.info  
-        
-        # 提取基本信息  
         price = info.get('currentPrice', 'N/A')  
         market_cap = info.get('marketCap', 'N/A')  
         pe_ratio = info.get('trailingPE', 'N/A')  
-        
-        return f"股票代码: {ticker}\n价格: {price}\n市值: {market_cap}\nP/E比率: {pe_ratio}"  
+        return f"Ticker: {ticker}\nPrice: {price}\nMarket Cap: {market_cap}\nP/E Ratio: {pe_ratio}"  
     except Exception as e:  
-        return f"获取{ticker}股票信息时出错: {str(e)}"  
+        return f"Error fetching {ticker} stock info: {str(e)}"  
 
 def get_financial_statements(ticker: str) -> str:  
-    """获取公司最近的财务报表摘要"""  
+    """Get the latest company financial statement summary"""  
     try:  
         stock = yf.Ticker(ticker)  
-        
-        # 获取收入报表数据而不是弃用的earnings  
         income_stmt = stock.income_stmt  
         if income_stmt is not None and not income_stmt.empty:  
-            # 获取最近一年的总收入和净收入  
             total_revenue = income_stmt.loc['Total Revenue'].iloc[-1]  
             net_income = income_stmt.loc['Net Income'].iloc[-1]  
-            return f"{ticker}最近年度财务数据:\n营收: {total_revenue}\n净利润: {net_income}"  
+            return f"{ticker} Latest Annual Financial Data:\nRevenue: {total_revenue}\nNet Income: {net_income}"  
         else:  
-            return f"未找到{ticker}的财务数据"  
+            return f"No financial data found for {ticker}"  
     except Exception as e:  
-        return f"获取{ticker}财务报表时出错: {str(e)}"  
+        return f"Error fetching {ticker} financial statements: {str(e)}"  
 
-# ===== 新闻搜索工具 =====  
+# ===== News Search Tool =====  
 def search_company_news(query: str) -> str:  
-    """使用DuckDuckGo搜索公司相关新闻"""  
+    """Use DuckDuckGo to search for company news"""  
     try:  
-        search_query = f"{query} 最新财经新闻 股票"  
+        search_query = f"{query} latest financial news stock"  
         with DDGS() as ddgs:  
             results = list(ddgs.text(search_query, max_results=5))  
-        
         if not results:  
-            return f"未找到关于{query}的新闻"  
-            
+            return f"No news found for {query}"  
         formatted_results = ""  
         for i, result in enumerate(results, 1):  
             title = result.get('title', 'No Title')  
             snippet = result.get('body', 'No Content')  
             url = result.get('href', '#')  
-            formatted_results += f"{i}. {title}\n{snippet}\n来源: {url}\n\n"  
-            
-        return f"关于{query}的最新新闻:\n\n{formatted_results}"  
+            formatted_results += f"{i}. {title}\n{snippet}\nSource: {url}\n\n"  
+        return f"Latest news about {query}:\n\n{formatted_results}"  
     except Exception as e:  
-        return f"搜索{query}新闻时出错: {str(e)}"  
+        return f"Error searching news for {query}: {str(e)}"  
 
-# ===== 工具集成 =====  
+# ===== Tool Integration =====  
 def get_all_tools():  
-    """整合所有工具 - 使用英文名称"""  
+    """Integrate all tools - use English names"""  
     tools = [  
         Tool(  
             name="get_stock_price",  
@@ -92,7 +83,7 @@ def get_all_tools():
     ]  
     return tools  
 
-# ===== Agent提示模板 =====  
+# ===== Agent Prompt Template =====  
 FINREPORT_AGENT_TEMPLATE = """  
 You are a professional financial analyst assistant. Your goal is to generate a concise yet informative financial report ("FinReport") for a given company.  
 
@@ -136,10 +127,9 @@ Question: {input}
 {agent_scratchpad}  
 """  
 
-# ===== 构建和运行Agent =====  
+# ===== Build and Run Agent =====  
 def build_finreport_agent(verbose=True):  
-    """构建FinReport生成Agent"""  
-    # 初始化LLM  
+    """Build the FinReport Agent"""  
     llm = ChatOpenAI(  
         model_name=LLM_MODEL,  
         openai_api_base=OPENAI_API_BASE,  
@@ -148,17 +138,9 @@ def build_finreport_agent(verbose=True):
         streaming=verbose,  
         callbacks=[StreamingStdOutCallbackHandler()] if verbose else None  
     )  
-    
-    # 加载所有工具  
     tools = get_all_tools()  
-    
-    # 获取提示模板  
     prompt = PromptTemplate.from_template(FINREPORT_AGENT_TEMPLATE)  
-    
-    # 创建Agent  
     agent = create_react_agent(llm, tools, prompt)  
-    
-    # 创建Agent执行器  
     agent_executor = AgentExecutor(  
         agent=agent,  
         tools=tools,  
@@ -166,94 +148,74 @@ def build_finreport_agent(verbose=True):
         handle_parsing_errors=True,  
         max_iterations=AGENT_MAX_ITERATIONS  
     )  
-    
     return agent_executor  
 
 def generate_finreport(ticker):  
-    """为指定股票生成金融报告"""  
+    """Generate a financial report for the given stock"""  
     agent = build_finreport_agent(verbose=True)  
     result = agent.invoke({"input": f"Generate a comprehensive financial report for {ticker}. Include stock analysis, news summary, investment opinion, and risk assessment."})  
     return result['output']  
 
 def save_report(ticker, report_content):  
-    """将报告保存到文件"""  
-    # 创建保存路径 - 修复路径问题
-    save_dir = os.path.join("Fin_Agent", "USStock_Finreport")
-    
-    # 确保文件夹存在
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-    
-    # 构建完整文件路径
-    filepath = os.path.join(save_dir, f"{ticker}_FinReport.md")
-    
+    """Save the report to a file"""  
+    save_dir = os.path.join("Fin_Agent", "USStock_Finreport")  
+    if not os.path.exists(save_dir):  
+        os.makedirs(save_dir)  
+    filepath = os.path.join(save_dir, f"{ticker}_FinReport.md")  
     with open(filepath, "w", encoding="utf-8") as f:  
         f.write(report_content)  
-    return filepath
+    return filepath  
 
-# ===== 单独测试工具函数 =====  
+# ===== Test Utility Functions =====  
 def test_financial_tools():  
-    """测试金融工具功能"""  
+    """Test financial tool functions"""  
     ticker = "AAPL"  
-    print(f"测试获取股票价格 - {ticker}:")  
+    print(f"Testing get_stock_price - {ticker}:")  
     print(get_stock_price(ticker))  
-    print("\n测试获取财务报表:")  
+    print("\nTesting get_financial_statements:")  
     print(get_financial_statements(ticker))  
 
 def test_news_tools():  
-    """测试新闻搜索工具功能"""  
-    query = "特斯拉"  
-    print(f"测试搜索公司新闻 - {query}:")  
+    """Test news search tool functions"""  
+    query = "Tesla"  
+    print(f"Testing search_company_news - {query}:")  
     print(search_company_news(query))  
 
-# ===== 主程序 =====  
+# ===== Main Program =====  
 def main():  
-    print("===== FinReport生成器 =====")  
-    print("这个工具可以为任何公司生成专业的金融分析报告")  
-    
+    print("===== FinReport Generator =====")  
+    print("This tool can generate a professional financial analysis report for any company")  
     while True:  
-        print("\n选择操作：")  
-        print("1. 生成公司金融报告")  
-        print("2. 测试金融数据工具")  
-        print("3. 测试新闻搜索工具")  
-        print("0. 退出程序")  
-        
-        choice = input("请输入选项 (0-3): ")  
-        
+        print("\nSelect an option:")  
+        print("1. Generate Company Financial Report")  
+        print("2. Test Financial Data Tool")  
+        print("3. Test News Search Tool")  
+        print("0. Exit")  
+        choice = input("Please enter your choice (0-3): ")  
         if choice == "1":  
-            ticker = input("请输入股票代码(如'AAPL'): ")  
+            ticker = input("Enter Stock Ticker (e.g. 'AAPL'): ")  
             if not ticker:  
                 continue  
-                
-            print(f"\n正在为{ticker}生成金融报告，请稍候...")  
+            print(f"\nGenerating financial report for {ticker}, please wait...")  
             try:  
                 report = generate_finreport(ticker)  
-                
-                print("\n===== 生成的FinReport =====")  
+                print("\n===== Generated FinReport =====")  
                 print(report)  
-                
-                # 保存报告  
                 filename = save_report(ticker, report)  
-                print(f"\n报告已保存到文件: {filename}")  
-                
+                print(f"\nReport saved to file: {filename}")  
             except Exception as e:  
-                print(f"生成报告时发生错误: {str(e)}")  
-                
+                print(f"Error generating report: {str(e)}")  
         elif choice == "2":  
             test_financial_tools()  
-            
         elif choice == "3":  
-            query = input("请输入要搜索新闻的公司名称或股票代码: ")  
+            query = input("Enter company name or ticker to search news: ")  
             if query:  
                 print(search_company_news(query))  
-                
         elif choice == "0":  
             break  
-            
         else:  
-            print("无效的选择，请重试")  
-    
-    print("感谢使用FinReport生成器!")  
+            print("Invalid choice, please try again")  
+    print("Thank you for using the FinReport Generator!")  
 
 if __name__ == "__main__":  
     main()  
