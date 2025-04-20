@@ -9,7 +9,7 @@ plt.rcParams['font.sans-serif'] = ['SimHei']  # For displaying Chinese labels no
 plt.rcParams['axes.unicode_minus'] = False    # For displaying negative signs normally  
 
 os.environ["OPENAI_API_BASE"] = "https://api.chatanywhere.tech/v1"  
-os.environ["OPENAI_API_KEY"] = "sk-bVWnGBsURxbZSojM6pU3Xmogfbiq6q835INsr1OLrHtBWmgy"  
+os.environ["OPENAI_API_KEY"] = "YOUR API KEY"  
 LLM_MODEL = "gpt-3.5-turbo"  
 DEFAULT_TEMPERATURE = 0.2  
 
@@ -17,7 +17,7 @@ DEFAULT_TEMPERATURE = 0.2
 import tushare as ts  
 
 # Your tushare token (replace with your actual token)  
-ts.set_token(os.environ.get("TS_TOKEN", "61bc3e2363dbb5362e7181aa355e60f9bf340a0456d2e033db120a8b"))  
+ts.set_token(os.environ.get("TS_TOKEN", "YOUR TUSHARE TOKEN"))  
 pro = ts.pro_api()  
 
 def fetch_stock_data(stock_code='600036.SH', start='20230101', end=None, save_dir='Fin_Agent/Finreport'):  
