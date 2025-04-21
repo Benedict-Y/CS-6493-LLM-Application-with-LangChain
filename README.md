@@ -32,16 +32,16 @@ All agents are implemented under the [`Fin_Agent/`](./Fin_Agent) directory.
 
 ## 🧱 Project Structure
 
-. ├── Fin_Agent/ # 💡 Core Financial Agent system 
-│ ├── AStock.py # A-share agent 
-│ ├── USStock.py # US stock agent 
-│ ├── finreport_opt.py # OPT Agent for refining LLM reports 
-│ └── ... # Reports, backups, visuals 
-├── Chatbot/ # 🗨️ LangChain-based dialogue logic 
-├── Langchain-Chatchat/ # UI & chat backend (third-party) 
-├── LLMBox/ # 📊 LLM evaluator (extended from open-source) 
-├── docs/NLP/ # 📐 LLM Judge for report evaluation 
-└── README.md
+. ├── Fin_Agent/ # 💡 Core Financial Agent system   
+│ ├── AStock.py # A-share agent   
+│ ├── USStock.py # US stock agent   
+│ ├── finreport_opt.py # OPT Agent for refining LLM reports   
+│ └── ... # Reports, backups, visuals   
+├── Chatbot/ # 🗨️ LangChain-based dialogue logic   
+├── Langchain-Chatchat/ # UI & chat backend (third-party)   
+├── LLMBox/ # 📊 LLM evaluator (extended from open-source)   
+├── docs/NLP/ # 📐 LLM Judge for report evaluation   
+└── README.md  
 
 ---
 
